@@ -17,16 +17,13 @@ message_schema = BitStruct(
 
 class Message:
     def __init__(self, **kwargs):
-        # kwargs é um dicionário que contém todos os argumentos passados
         self.data = kwargs
 
     def build(self):
-        # Constrói a mensagem a partir dos dados fornecidos
         return message_schema.build(self.data)
 
     @staticmethod
     def parse(data):
-        # Cria uma instância da classe Message a partir de bytes
         parsed_data = message_schema.parse(data)
         return Message(**parsed_data)
 
