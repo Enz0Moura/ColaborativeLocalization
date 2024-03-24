@@ -26,10 +26,7 @@ class Bracelete:
         )
 
         message_bytes = msg.build()
-        if len(self.memory) == 0:
-            self.memory.append(message_bytes)
-        else:
-            self.memory[0] = message_bytes
+        self.memory.append(message_bytes)
         return message_bytes
 
     def get_location(self):
@@ -43,9 +40,10 @@ class Bracelete:
 
     def send_data(self):
         if len(self.memory) == 0:
-            return self.emit_beacon()
-        else:
-            return self.memory
+            self.emit_beacon()
+        beacons = self.memory
+        self.memory = []
+        return beacons
 
     def receive_beacon(self, beacon):
         self.save_data(beacon)

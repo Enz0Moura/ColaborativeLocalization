@@ -8,7 +8,7 @@ totem = TotemModel()
 server = ServerModel()
 
 
-send_bracelet_beacons(bracelet, totem)
+send_bracelet_beacons(bracelet.send_data(), totem)
 
 server.receive_data(totem.send_memory())
 
