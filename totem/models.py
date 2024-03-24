@@ -21,3 +21,6 @@ class Totem:
     def send_beacon(self):
         # Emit a beacon with its own location and ID
         pass
+
+    def send_data_received(self):
+        return self.received_data

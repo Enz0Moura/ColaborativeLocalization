@@ -1,3 +1,4 @@
+from message.models import Message as MessageModel
 class Bracelete:
     def __init__(self):
         self.memory = []
@@ -7,19 +8,42 @@ class Bracelete:
         self.state = "SLEEP"
 
     def emit_beacon(self):
-        return {'location': self.get_location(), 'id': self.get_id()}
+        location = self.get_location()
+        msg = MessageModel(
+            message_type=True,
+            id=12345,
+            latitude=location['latitude'],
+            longitude=location['longitude'],
+            group_flag=True,
+            record_time=12345,
+            max_records=200,
+            hop_count=10,
+            channel=3,
+            location_time=54321,
+            help_flag=0,
+            battery=12
+        )
+
+        message_bytes = msg.build()
+        if len(self.memory) == 0:
+            self.memory.append(message_bytes)
+        else:
+            self.memory[0] = message_bytes
+        return message_bytes
 
     def get_location(self):
-        return "approximate_location"
+        return {"latitude": 40.7128, "longitude": -74.0060}
 
     def get_id(self):
-        return "bracelet_id"
+        return 1234
 
     def save_data(self, data):
         self.memory.append(data)
 
     def send_data(self):
-        pass
+        if len(self.memory) == 0:
+            self.emit_beacon()
+        return self.memory
 
     def receive_beacon(self, beacon):
         self.save_data(beacon)

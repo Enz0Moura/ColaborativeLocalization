@@ -1,24 +1,14 @@
-from message.models import Message as MessageModel
-import json
-
-msg = MessageModel(
-    message_type=True,
-    id=12345,
-    latitude=40.7128,
-    longitude = -74.0060,
-    group_flag=True,
-    record_time=12345,
-    max_records=200,
-    hop_count=10,
-    channel=3,
-    location_time=54321,
-    help_flag=0,
-    battery=12
-)
-
-message_bytes = msg.build()
+from bracelet.models import Bracelete as BraceletModel
+from totem.models import Totem as TotemModel
+from server.models import Server as ServerModel
 
 
-new_msg = MessageModel.parse(message_bytes)
+bracelet = BraceletModel()
+totem = TotemModel()
 
-print(new_msg)
+beacon = bracelet.send_data()
+
+totem.receive_data(beacon)
+
+
+
