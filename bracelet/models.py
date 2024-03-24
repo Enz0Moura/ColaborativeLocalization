@@ -42,8 +42,9 @@ class Bracelete:
 
     def send_data(self):
         if len(self.memory) == 0:
-            self.emit_beacon()
-        return self.memory
+            return self.emit_beacon()
+        else:
+            return self.memory
 
     def receive_beacon(self, beacon):
         self.save_data(beacon)

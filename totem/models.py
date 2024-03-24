@@ -1,14 +1,14 @@
 class Totem:
     def __init__(self):
         self.state = "INITIAL"
-        self.received_data = []
+        self.memory = []
 
     def initial_state(self):
         self.state = "INITIAL"
 
     def receive_data(self, data):
         # Handle reception of data from a bracelet
-        self.received_data.append(data)
+        self.memory.append(data)
 
     def evaluate_data(self, data):
         # Placeholder for logic to evaluate which data to accept
@@ -22,5 +22,5 @@ class Totem:
         # Emit a beacon with its own location and ID
         pass
 
-    def send_data_received(self):
-        return self.received_data
+    def send_memory(self):
+        return self.memory

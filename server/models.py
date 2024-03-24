@@ -1,11 +1,11 @@
 from message.models import Message as MessageModel
-def Server():
+class Server():
     def __init__(self):
         self.state = "INITIAL"
-        self.received_data = []
+        self.memory = []
 
     def receive_data(self, data):
         for message in data:
-            self.received_data.append(MessageModel.parse(message))
+            self.memory.append(MessageModel.parse(message))
 
 
