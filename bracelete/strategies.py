@@ -1,13 +1,21 @@
-def pack_lat_long(latitude, longitude):
-    lat_packed = int((latitude + 90) * (2**24 / 180))
-    long_packed = int((longitude + 180) * (2**24 / 360))
+def cord_to_24bit(value, range_min, range_max, bits=24):
+    """Converte um valor de coordenada do seu intervalo original para um valor de 24 bits.
 
-    return (lat_packed, long_packed)
+    Range para latitude: -90 até 90
+    
+    Range para longitude: -180 até 180 
+    """
+    normalized = (value - range_min) / (range_max - range_min)
+    return int(normalized * (2**bits - 1))
 
-def unpack_lat_long(lat_packed, long_packed):
-    latitude = (lat_packed * (180 / 2**24)) - 90
-    longitude = (long_packed * (360 / 2**24)) - 180
+def cord_from_24bit(value, range_min, range_max, bits=24):
+    """Converte um valor de coordenada do 24 bits de volta para seu valor original no intervalo.
 
-    return (latitude, longitude)
+    Range para latitude: -90 até 90
+    
+    Range para longitude: -180 até 180 
+    """
 
+    normalized = value / (2**bits - 1)
+    return normalized * (range_max - range_min) + range_min
 

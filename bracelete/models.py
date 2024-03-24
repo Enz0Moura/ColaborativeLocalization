@@ -1,5 +1,7 @@
 from construct import Struct, BitStruct, Flag, BitsInteger, Padding, bytes2str
 
+from bracelete.strategies import cord_to_24bit, cord_from_24bit
+
 message_schema = BitStruct(
     "message_type" / Flag,
     "id" / BitsInteger(15),
@@ -17,6 +19,12 @@ message_schema = BitStruct(
 
 class Message:
     def __init__(self, **kwargs):
+        print(f"Original latitude: {kwargs['latitude']}, longitude: {kwargs['longitude']}")
+        if 'latitude' in kwargs:
+            kwargs['latitude'] = cord_to_24bit(kwargs['latitude'], -90, 90)
+        if 'longitude' in kwargs:
+            kwargs['longitude'] = cord_to_24bit(kwargs['longitude'], -180, 180)
+        print(f"Converted to 24 bit - latitude: {kwargs['latitude']}, longitude: {kwargs['longitude']}")
         self.data = kwargs
 
     def build(self):
@@ -25,7 +33,13 @@ class Message:
     @staticmethod
     def parse(data):
         parsed_data = message_schema.parse(data)
-        return Message(**parsed_data)
+        if 'latitude' in parsed_data:
+            parsed_data['latitude'] = cord_from_24bit(parsed_data['latitude'], -90, 90)
+        if 'longitude' in parsed_data:
+            parsed_data['longitude'] = cord_from_24bit(parsed_data['longitude'], -180, 180)
+        data = dict(parsed_data)
+        data.pop('_io', None)
+        return data
 
 
 class Bracelete:
