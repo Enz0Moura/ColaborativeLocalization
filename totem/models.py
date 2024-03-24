@@ -7,20 +7,21 @@ class Totem:
         self.state = "INITIAL"
 
     def receive_data(self, data):
-        # Handle reception of data from a bracelet
+        # Recebe beacons do bracelete
         self.memory.append(data)
 
     def evaluate_data(self, data):
-        # Placeholder for logic to evaluate which data to accept
+        # Placeholder para lógica de aceite de dados
         return True
 
     def send_acceptance(self):
-        # Send acceptance message back to bracelet
+        # Manda mensagem de aceite para o bracelete
         pass
 
     def send_beacon(self):
-        # Emit a beacon with its own location and ID
+        # Emite beacon da própria localização e ID
         pass
 
     def send_memory(self):
+        # Placeholder para função relacionada a banco de dados
         return self.memory

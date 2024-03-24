@@ -2,6 +2,7 @@ from message.models import Message as MessageModel
 class Bracelete:
     def __init__(self):
         self.memory = []
+        self.emit_beacon()
         self.state = "SLEEP"
 
     def sleep(self):
