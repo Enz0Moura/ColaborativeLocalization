@@ -1,7 +1,5 @@
-from bracelete.models import message_schema
-from bracelete.models import Message as MessageModel
+from message.models import Message as MessageModel
 import json
-from construct import bytes2str
 
 msg = MessageModel(
     message_type=True,
