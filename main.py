@@ -11,5 +11,5 @@ server = ServerModel()
 send_bracelet_beacons(bracelet.send_data(), totem)
 
 server.receive_data(totem.send_memory())
-
+print(bracelet.memory)
 print(server.memory)
