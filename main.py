@@ -1,9 +1,9 @@
-from bracelet.models import Bracelete as BraceletModel
+from bracelet.models import Terminal as TerminalModel
 from totem.models import Totem as TotemModel
 from server.models import Server as ServerModel
 from sim.strategies import send_bracelet_beacons
 
-bracelet = BraceletModel()
+bracelet = TerminalModel()
 totem = TotemModel()
 server = ServerModel()
 
