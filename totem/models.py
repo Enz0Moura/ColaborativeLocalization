@@ -1,26 +1,35 @@
 class Totem:
     def __init__(self):
-        self.state = "INITIAL"
-        self.memory = []
+        self.connected_terminals = {}
+        self.data_storage = []
+    def receive_beacon(self, beacon, terminal_id):
+        # Processa beacons recebidos dos terminais
+        if terminal_id not in self.connected_terminals:
+            self.connected_terminals[terminal_id] = "CONNECTED"
+            self.acknowledge_beacon(terminal_id)
+            print(f"Totem: Beacon recebido e conectado ao Terminal {terminal_id}.")
+        else:
+            pass
 
-    def initial_state(self):
-        self.state = "INITIAL"
+    def acknowledge_beacon(self, terminal_id):
+        print(f"Totem: Enviando confirmação de recepção do beacon para Terminal {terminal_id}.")
 
-    def receive_data(self, data):
-        # Recebe beacons do bracelete
-        self.memory.append(data)
+    def store_data(self, data):
+        self.data_storage.append(data)
+        print("Totem: Dados recebidos e armazenados.")
 
-    def evaluate_data(self, data):
-        # Placeholder para lógica de aceite de dados
-        return True
+    def send_data_to_terminal(self, terminal_id, data):
+        print(f"Totem: Enviando dados para Terminal {terminal_id}.")
 
-    def send_acceptance(self):
-        # Manda mensagem de aceite para o bracelete
-        pass
+    def manage_connections(self):
+        for terminal_id, state in self.connected_terminals.items():
+            if state == "INACTIVE":
+                self.disconnect_terminal(terminal_id)
 
-    def send_beacon(self):
-        # Emite beacon da própria localização e ID
-        pass
+    def disconnect_terminal(self, terminal_id):
+        if terminal_id in self.connected_terminals:
+            del self.connected_terminals[terminal_id]
+            print(f"Totem: Terminal {terminal_id} desconectado.")
 
     def send_memory(self):
         # Placeholder para função relacionada a banco de dados
