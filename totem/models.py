@@ -33,4 +33,4 @@ class Totem:
 
     def send_memory(self):
         # Placeholder para função relacionada a banco de dados
-        return self.memory
+        return self.data_storage

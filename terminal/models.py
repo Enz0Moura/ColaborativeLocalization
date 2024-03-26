@@ -5,7 +5,7 @@ class Terminal:
     def __init__(self, terminal_id):
         self.terminal_id = terminal_id
         self.memory = []  # Para armazenar dados a serem enviados ou recebidos
-        self.state = "SLEEP"  # Estados incluem: SLEEP, LISTENING, SOLICIT_TRANSM, WAITING_FOR_REPLY, etc.
+        self.state = "SLEEP"  # Estados incluem: SLEEP, LISTENING, SOLICIT_TRANSM, WAITING_FOR_REPLY
         self.partner_terminal = None  # ID do terminal parceiro
         self.data_to_send = []  # Dados que este terminal deseja enviar
         self.data_to_receive = []  # Dados que este terminal deseja receber
@@ -27,7 +27,7 @@ class Terminal:
             location = self.get_location()
             msg = MessageModel(
                 message_type=True,
-                id=self.get_id(),
+                id=self.terminal_id,
                 latitude=location['latitude'],
                 longitude=location['longitude'],
                 group_flag=True,
@@ -53,10 +53,6 @@ class Terminal:
         # Retorna uma localização fixa, mas pode ser modificado para dinâmico
         return {"latitude": 40.7128, "longitude": -74.0060}
 
-    def get_id(self):
-        # Retorna o ID do Bracelete
-        return 1234
-
     def save_data(self, data):
         self.memory.append(data)
 
@@ -64,6 +60,9 @@ class Terminal:
         if self.state in ["WAITING_FOR_REPLY", "SOLICIT_TRANSM"]:
             if len(self.memory) == 0:
                 self.emit_beacon()
+                beacons = self.memory
+                self.memory = []
+                return beacons
             else:
                 # Envio dos dados acumulados
                 self.state = "TRANSMITTING"
@@ -97,6 +96,7 @@ class Terminal:
         pass
 
     def solicit_data_transmission(self):
+        self.state = "SOLICIT_TRANSM"
         # Solicitar ao parceiro a transmissão dos dados
         pass
 
