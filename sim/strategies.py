@@ -1,7 +1,7 @@
-def send_bracelet_beacons(memory, totem):
+def send_terminal_beacons(memory, totem):
     """placeholder para função que utilize LoRa"""
     for beacon in memory:
-        totem.receive_data(beacon)
+        totem.store_data(beacon)
 def simulate_interaction(bracelet, totem):
     # Totem emits a beacon
     beacon = totem.send_beacon()

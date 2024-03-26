@@ -1,19 +1,29 @@
 from message.models import Message as MessageModel
 
 
-class Bracelete:
-    def __init__(self):
-        self.memory = []
-        self.state = "SLEEP"
-        self.partner_id = None  # ID do parceiro de comunicação (outro Bracelete)
+class Terminal:
+    def __init__(self, terminal_id):
+        self.terminal_id = terminal_id
+        self.memory = []  # Para armazenar dados a serem enviados ou recebidos
+        self.state = "SLEEP"  # Estados incluem: SLEEP, LISTENING, SOLICIT_TRANSM, WAITING_FOR_REPLY, etc.
+        self.partner_terminal = None  # ID do terminal parceiro
+        self.data_to_send = []  # Dados que este terminal deseja enviar
+        self.data_to_receive = []  # Dados que este terminal deseja receber
 
     def sleep(self):
         self.state = "SLEEP"
         self.partner_id = None
 
+    def wake_up(self):
+        self.state = "LISTENING"
+        self.listen_for_beacon()
+
+    def listen_for_beacon(self):
+        # Lógica para escutar beacons. Se nenhum beacon for detectado, emitir um.
+        pass
     def emit_beacon(self):
-        if self.state == "SLEEP":
-            self.state = "INITIAL"
+        if self.state in ["LISTENING", "SLEEP"]:
+            self.state = "WAITING_FOR_REPLY"
             location = self.get_location()
             msg = MessageModel(
                 message_type=True,
@@ -37,6 +47,7 @@ class Bracelete:
         else:
             # Não emite beacon se não estiver em SLEEP
             pass
+
 
     def get_location(self):
         # Retorna uma localização fixa, mas pode ser modificado para dinâmico
@@ -63,9 +74,10 @@ class Bracelete:
             # Caso não esteja esperando por resposta ou solicitando transmissão, não envia dados
             pass
 
-    def receive_beacon(self, beacon):
+    def receive_beacon(self, beacon, sender_id):
+        self.partner_terminal = sender_id
         self.save_data(beacon)
-        if self.state == "INITIAL":
+        if self.state == "LISTENING":
             # Se estava no estado INICIAL e recebe um beacon, passa a solicitar transmissão
             self.state = "SOLICIT_TRANSM"
             self.partner_id = beacon.id
@@ -76,8 +88,27 @@ class Bracelete:
             self.state = "WAITING_FOR_DATA"
             # Seria enviada uma solicitação de transmissão para o parceiro identificado por partner_id
 
-    def handle_data_transmission_request(self, partner_id):
-        # Método para tratar uma solicitação de transmissão de dados recebida
-        if self.state == "WAITING_FOR_REPLY":
-            self.partner_id = partner_id
-            self.state = "ACCEPT_TRANSMISSION"
+    def send_metadata(self):
+        # Enviar metadados sobre os dados que deseja transmitir ou receber
+        pass
+
+    def receive_metadata(self, metadata):
+        # Receber e processar metadados do parceiro
+        pass
+
+    def solicit_data_transmission(self):
+        # Solicitar ao parceiro a transmissão dos dados
+        pass
+
+    def accept_data_reception(self):
+        # Aceitar a recepção de dados do parceiro
+        pass
+
+    def transmit_data(self):
+        # Lógica para transmitir dados ao parceiro
+        pass
+
+    def end_communication(self):
+        # Encerrar a comunicação e voltar ao estado inicial
+        self.state = "SLEEP"
+        self.partner_terminal = None
