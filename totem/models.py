@@ -2,6 +2,7 @@ class Totem:
     def __init__(self):
         self.connected_terminals = {}
         self.data_storage = []
+        # totem emite beacon! vários no tempo
     def receive_beacon(self, beacon, terminal_id):
         # Processa beacons recebidos dos terminais
         if terminal_id not in self.connected_terminals:
@@ -33,4 +34,6 @@ class Totem:
 
     def send_memory(self):
         # Placeholder para função relacionada a banco de dados
-        return self.data_storage
+        register = self.data_storage
+        self.data_storage = []
+        return register

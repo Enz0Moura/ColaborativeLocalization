@@ -7,8 +7,7 @@ bracelet = TerminalModel(terminal_id=1234)
 totem = TotemModel()
 server = ServerModel()
 
-
-bracelet.solicit_data_transmission()
+bracelet.listen_for_beacon()
 
 send_terminal_beacons(bracelet.send_data(), totem)
 
