@@ -55,7 +55,7 @@ class Terminal:
             battery=0
         )
 
-        message_bytes = msg.build()
+        message_bytes = msg.build() # se printar, aparecerá em hexadecimal por conta do Python, mas a representação interna é em binário.
 
         return message_bytes
 
