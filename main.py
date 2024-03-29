@@ -3,16 +3,21 @@ from totem.models import Totem as TotemModel
 from server.models import Server as ServerModel
 from sim.strategies import send_terminal_beacons
 
-bracelet = TerminalModel(terminal_id=1234)
+bracelet1 = TerminalModel(terminal_id=1234)
+bracelet2 = TerminalModel(terminal_id=4321)
 totem = TotemModel()
 server = ServerModel()
 id = 1234
 
-bracelet.listen_for_beacon(id)
+bracelet1.listen_for_beacon(bracelet2.wake_up())
+bracelet1.listen_for_beacon()
 
+print(bracelet1.partner_id)
 
-send_terminal_beacons(bracelet.send_data(), totem)
+print(bracelet1.state)
+
+send_terminal_beacons(bracelet1.request_data_transmission(), totem)
 
 server.receive_data(totem.send_memory())
-print(bracelet.memory)
+print(bracelet1.memory)
 print(server.memory)

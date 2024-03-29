@@ -8,7 +8,7 @@ class Terminal:
         self.terminal_id = terminal_id
         self.memory = []  # Para armazenar dados a serem enviados ou recebidos
         self.state = "SLEEP"  # Estados incluem: SLEEP, LISTENING, SOLICIT_TRANSM, WAITING_FOR_REPLY, TRANSMITTING
-        self.partner_terminal = None  # ID do terminal parceiro
+        self.partner_id = None  # ID do terminal parceiro
         self.data_to_send = []  # Dados que este terminal deseja enviar
         self.data_to_receive = []  # Dados que este terminal deseja receber
 
@@ -20,15 +20,16 @@ class Terminal:
 
     def wake_up(self, data=None):
         self.state = "LISTENING"
-        self.listen_for_beacon(data)
+        return self.listen_for_beacon(data)
 
     def listen_for_beacon(self, data=None):
         self.state = "LISTENING"
         if data is None:
-            self.emit_beacon()
+            return self.emit_beacon()
         # Lógica para escutar beacons. Se nenhum beacon for detectado, emitir um.
         else:
             self.state = "SOLICIT_TRANSM"
+            self.receive_beacon(data)
             self.request_data_transmission()
 
     def emit_beacon(self):
@@ -38,7 +39,7 @@ class Terminal:
             msg = self.serialize(mobileBeaconSchema(message_type=1, id=self.terminal_id, latitude=location['latitude'],
                                                     longitude=location['longitude'],
                                                     record_time=10))
-            self.memory.append(msg)
+            return self.save_data(msg)
 
         elif self.state == "TRANSMITTING":
             self.state = "WAITING_FOR_REPLY"  # adicionar temporização
@@ -46,7 +47,7 @@ class Terminal:
             msg = self.serialize(recordSchema(message_type=1, id=self.terminal_id, latitude=location['latitude'],
                                               longitude=location['longitude'], group_flag=3,
                                               record_time=10, max_records=1, hop_count=10, channel=3, location_time=50, help_flag=0, battery=12))
-            self.memory.append(msg)
+            return self.save_data(msg)
 
         else:
             # Não emite beacon se não estiver em LISTENING
@@ -94,7 +95,7 @@ class Terminal:
 
     def save_data(self, data):
         self.memory.append(data)
-
+        return data
     def send_data(self):
         if self.state in ["WAITING_FOR_REPLY", "SOLICIT_TRANSM"]:
             # Envio dos dados acumulados
@@ -107,7 +108,8 @@ class Terminal:
             pass
 
     def receive_beacon(self, beacon):
-        self.partner_terminal = beacon.id  # ver qual vai ser o formato do beacon (pode ser dict, json)
+        beacon_parsed = MessageModel.parse(beacon)
+        self.partner_id = beacon_parsed['id']  # ver qual vai ser o formato do beacon (pode ser dict, json)
         self.save_data(beacon)
 
     def request_data_transmission(self):
@@ -117,16 +119,10 @@ class Terminal:
             if len(self.memory) == 0:
                 self.state = "TRANSMITTING"
                 self.emit_beacon()
+        else:
+            self.state = "WAITING_FOR_REPLY"
+            return self.send_data()
             # Seria enviada uma solicitação de transmissão para o parceiro identificado por partner_id
-
-    def send_metadata(self):
-        # Enviar metadados sobre os dados que deseja transmitir ou receber
-        pass
-
-    def receive_metadata(self, metadata):
-        # Receber e processar metadados do parceiro
-
-        pass
 
     def accept_data_reception(self):
         # Aceitar a recepção de dados do parceiro
