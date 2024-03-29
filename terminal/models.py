@@ -17,13 +17,14 @@ class Terminal:
         self.state = "SLEEP"
         self.partner_id = None
 
-    def wake_up(self):
+    def wake_up(self, data=None):
         self.state = "LISTENING"
-        self.listen_for_beacon()
+        self.listen_for_beacon(data)
 
-    def listen_for_beacon(self):
+    def listen_for_beacon(self, data=None):
         self.state = "LISTENING"
-        self.emit_beacon()
+        if data is None:
+            self.emit_beacon()
         # Lógica para escutar beacons. Se nenhum beacon for detectado, emitir um.
         pass
 
@@ -39,8 +40,8 @@ class Terminal:
             pass
 
     def serialize(self, data: mobileBeaconSchema | recordSchema):
-
-        msg = MessageModel(
+        if isinstance(data, mobileBeaconSchema):
+            msg = MessageModel(
             message_type=data.message_type,
             id=data.id,
             latitude=data.latitude,
@@ -53,7 +54,22 @@ class Terminal:
             location_time=0,
             help_flag=0,
             battery=0
-        )
+            )
+        if isinstance(data, recordSchema):
+            msg = MessageModel(
+                message_type=data.message_type,
+                id=data.id,
+                latitude=data.latitude,
+                longitude=data.longitude,
+                group_flag=data.group_flag,
+                record_time=data.record_time,
+                max_records=data.max_records,
+                hop_count=data.hop_count,
+                channel=data.channel,
+                location_time=data.location_time,
+                help_flag=data.help_flag,
+                battery=data.battery
+            )
 
         message_bytes = msg.build() # se printar, aparecerá em hexadecimal por conta do Python, mas a representação interna é em binário.
 
