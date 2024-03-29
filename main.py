@@ -12,9 +12,6 @@ id = 1234
 bracelet1.listen_for_beacon(bracelet2.wake_up())
 bracelet1.listen_for_beacon()
 
-print(f"Partner ID = {bracelet1.partner_id}")
-
-
 send_terminal_beacons(bracelet1.request_data_transmission(), totem)
 
 server.receive_data(totem.send_memory())
