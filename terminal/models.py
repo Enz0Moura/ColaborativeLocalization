@@ -110,6 +110,7 @@ class Terminal:
     def receive_beacon(self, beacon):
         beacon_parsed = MessageModel.parse(beacon)
         self.partner_id = beacon_parsed['id']  # ver qual vai ser o formato do beacon (pode ser dict, json)
+        print(f"Bracelet-{self.terminal_id} recieved Bracelet-{self.partner_id} beacon")
         self.save_data(beacon)
 
     def request_data_transmission(self):
