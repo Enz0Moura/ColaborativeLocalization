@@ -9,7 +9,6 @@ class Totem:
         self.connected_terminals = {}
         self.id = uuid.uuid4()
         self.data_storage = []
-        # totem emite beacon! vários no tempo
 
     def max_records(self):
         """
@@ -22,8 +21,13 @@ class Totem:
         # Processa beacons recebidos dos terminais
         if terminal_id not in self.connected_terminals:
             self.connected_terminals[terminal_id] = "CONNECTED"
-            self.acknowledge_beacon(beacon)
             print(f"Totem: Beacon recebido e conectado ao Terminal {terminal_id}.")
+            ack = self.acknowledge_beacon(beacon)
+            if ack.max_records > 0:
+                print(f"Connection acepted with max records: {ack.max_records}")
+            else:
+                print(f"Connection refused with max records: {ack.hopcount}")
+            return ack
         else:
             pass
 
@@ -31,6 +35,7 @@ class Totem:
         """
         Aceitar a recepção de dados do terminal
         """
+
         if len(self.data_storage) <= 12:
             if len(self.data_storage) > 8 or beacon.hop_count <= 5:
                 ack = self.max_records()
@@ -48,6 +53,7 @@ class Totem:
         """
         Método para envio de mensagem de ack. A representação interna da mensagem está em hexadecimal para facilitar leitura, mas o dado real é binário
         """
+
         msg = MessageModel(
             message_type=data.message_type,
             id=data.id,
