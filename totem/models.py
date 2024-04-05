@@ -32,18 +32,11 @@ class Totem:
         Aceitar a recepção de dados do terminal
         """
         if len(self.data_storage) <= 12:
-            if len(self.data_storage) > 8:
+            if len(self.data_storage) > 8 or beacon.hop_count <= 5:
                 ack = self.max_records()
-                self.acknowledge_beacon(beacon, ack)
-                pass
-            elif beacon.hop_count <= 5:
-                ack = self.max_records()
-                self.acknowledge_beacon(beacon, ack)
-                pass
         else:
             ack = 0
-            self.acknowledge_beacon(beacon, ack)
-        pass
+        return self.acknowledge_beacon(beacon, ack)
 
     def acknowledge_beacon(self, beacon, ack):
         print(f"Totem: Enviando confirmação de recepção do beacon para Terminal {beacon.id}.")
