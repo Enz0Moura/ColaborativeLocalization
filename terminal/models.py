@@ -23,10 +23,13 @@ class Terminal:
         return self.listen_for_beacon(data)
 
     def listen_for_beacon(self, data=None):
+        """
+        Lógica para escutar beacons. Se nenhum beacon for detectado, emitir um.
+        """
         self.state = "LISTENING"
         if data is None:
             return self.emit_beacon()
-        # Lógica para escutar beacons. Se nenhum beacon for detectado, emitir um.
+
         else:
             self.state = "SOLICIT_TRANSM"
             self.receive_beacon(data)
@@ -39,15 +42,16 @@ class Terminal:
             msg = self.serialize(mobileBeaconSchema(message_type=1, id=self.terminal_id, latitude=location['latitude'],
                                                     longitude=location['longitude'],
                                                     record_time=10))
-            return self.save_data(msg)
+            return self.send_data(msg)
 
         elif self.state == "TRANSMITTING":
             self.state = "WAITING_FOR_REPLY"  # adicionar temporização
             location = self.get_location()
             msg = self.serialize(recordSchema(message_type=1, id=self.terminal_id, latitude=location['latitude'],
                                               longitude=location['longitude'], group_flag=3,
-                                              record_time=10, max_records=1, hop_count=10, channel=3, location_time=50, help_flag=0, battery=12))
-            return self.save_data(msg)
+                                              record_time=10, max_records=1, hop_count=10, channel=3, location_time=50,
+                                              help_flag=0, battery=12))
+            return self.send_data(msg)
 
         else:
             # Não emite beacon se não estiver em LISTENING
@@ -96,15 +100,23 @@ class Terminal:
     def save_data(self, data):
         self.memory.append(data)
         return data
-    def send_data(self):
+
+    def send_data(self, msg=None):
+        """
+        Função que retorna dados acumulados em um terminal ou um beacon emitido.
+        """
         if self.state in ["WAITING_FOR_REPLY", "SOLICIT_TRANSM"]:
-            # Envio dos dados acumulados
             self.state = "TRANSMITTING"
+            if msg is not None:
+                record = self.save_data(msg)
+                return record
             record = self.memory
             self.memory = []
             return record
         else:
-            # Caso não esteja esperando por resposta ou solicitando transmissão, não envia dados
+            """
+            Caso não esteja esperando por resposta ou solicitando transmissão, não envia dados
+            """
             pass
 
     def receive_beacon(self, beacon):
