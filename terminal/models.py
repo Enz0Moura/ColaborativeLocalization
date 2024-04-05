@@ -125,10 +125,18 @@ class Terminal:
 
     def receive_beacon(self, beacon):
         beacon_parsed = MessageModel.parse(beacon)
-        self.partner_id = beacon_parsed['id']  # ver qual vai ser o formato do beacon (pode ser dict, json)
+        self.partner_id = beacon_parsed['id']
         print(f"Bracelet-{self.terminal_id} recieved Bracelet-{self.partner_id} beacon")
         self.save_data(beacon)
 
+    def receive_ack(self, ack):
+        ack_parsed = MessageModel.parse(ack)
+        if ack_parsed is not None and ack_parsed['max_records'] > 0:
+            print(f"Connection with totem-{ack_parsed['totem_id']} was accepted")
+            return self.send_data()
+        else:
+            print(f"Connection with totem-{ack_parsed['totem_id']} was refused")
+            return None
     def request_data_transmission(self):
         """
         Método para solicitar a transmissão de dados para o parceiro
@@ -141,11 +149,14 @@ class Terminal:
         else:
             self.state = "WAITING_FOR_REPLY"
             return self.send_data()
-            # Seria enviada uma solicitação de transmissão para o parceiro identificado por partner_id
 
     def transmit_data(self):
-        # Lógica para transmitir dados ao parceiro
+        """
+        Lógica para transmitir dados ao parceiro
+        """
         pass
+
+
 
     def end_communication(self):
         """
