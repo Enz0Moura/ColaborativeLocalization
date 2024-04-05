@@ -11,6 +11,7 @@ class totemACK(BaseModel):
     id: int
     group_flag: int
     location_time: int
+    max_records: int
     latitude: float
     longitude: float
 

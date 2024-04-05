@@ -54,7 +54,9 @@ class Terminal:
             return self.send_data(msg)
 
         else:
-            # Não emite beacon se não estiver em LISTENING
+            """
+            Não emite beacon se não estiver em LISTENING
+            """
             pass
 
     def serialize(self, data: mobileBeaconSchema | recordSchema):
@@ -94,7 +96,9 @@ class Terminal:
         return message_bytes
 
     def get_location(self):
-        # Retorna uma localização fixa, mas pode ser modificado para dinâmico
+        """
+        Placeholder para método que retorna localização dinânmica do terminal.
+        """
         return {"latitude": 40.7128, "longitude": -74.0060}
 
     def save_data(self, data):
@@ -103,7 +107,7 @@ class Terminal:
 
     def send_data(self, msg=None):
         """
-        Função que retorna dados acumulados em um terminal ou um beacon emitido.
+        Método que retorna dados acumulados em um terminal ou um beacon emitido.
         """
         if self.state in ["WAITING_FOR_REPLY", "SOLICIT_TRANSM"]:
             self.state = "TRANSMITTING"
@@ -126,7 +130,9 @@ class Terminal:
         self.save_data(beacon)
 
     def request_data_transmission(self):
-        # Método para solicitar a transmissão de dados para o parceiro
+        """
+        Método para solicitar a transmissão de dados para o parceiro
+        """
         if self.state == "SOLICIT_TRANSM" and self.terminal_id is not None:
             self.state = "WAITING_FOR_AK"
             if len(self.memory) == 0:
@@ -137,15 +143,14 @@ class Terminal:
             return self.send_data()
             # Seria enviada uma solicitação de transmissão para o parceiro identificado por partner_id
 
-    def accept_data_reception(self):
-        # Aceitar a recepção de dados do parceiro
-        pass
-
     def transmit_data(self):
         # Lógica para transmitir dados ao parceiro
         pass
 
     def end_communication(self):
-        # Encerrar a comunicação e voltar ao estado inicial
+        """
+        Método para encerrar a comunicação e voltar ao estado inicial
+        """
+
         self.state = "SLEEP"
         self.partner_terminal = None

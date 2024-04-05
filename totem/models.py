@@ -1,8 +1,20 @@
+import uuid
+
+from message.models import Message as MessageModel
+from message.schemas import totemACK as totemACKSchema
 class Totem:
     def __init__(self):
         self.connected_terminals = {}
+        self.id = uuid.uuid4()
         self.data_storage = []
         # totem emite beacon! vários no tempo
+
+    def max_records(self):
+        """
+        Método para verificação de espaço livre no totem
+        """
+        free_space =  12 - len(self.data_storage)
+        return free_space
     def receive_beacon(self, beacon, terminal_id):
         # Processa beacons recebidos dos terminais
         if terminal_id not in self.connected_terminals:
@@ -12,8 +24,38 @@ class Totem:
         else:
             pass
 
-    def acknowledge_beacon(self, terminal_id):
-        print(f"Totem: Enviando confirmação de recepção do beacon para Terminal {terminal_id}.")
+    def accept_data_reception(self, beacon):
+        """
+        Aceitar a recepção de dados do terminal
+        """
+        if len(self.data_storage) <= 12:
+            self.acknowledge_beacon(beacon)
+        pass
+    def acknowledge_beacon(self, beacon):
+        print(f"Totem: Enviando confirmação de recepção do beacon para Terminal {beacon.id}.")
+        return self.ack_message(totemACKSchema(message_type=2, id=self.id, group_flag=beacon.group_flag,record_time=beacon.record_time,latitude=beacon.latitude,longitude=beacon.longitude,max_records=self.max_records()))
+
+    def ack_message(self, data: totemACKSchema):
+        """
+        Método para envio de mensagem de ack. A representação interna da mensagem está em hexadecimal para facilitar leitura, mas o dado real é binário
+        """
+        msg = MessageModel(
+            message_type=data.message_type,
+            id=data.id,
+            latitude=data.latitude,
+            longitude=data.longitude,
+            group_flag=data.group_flag,
+            record_time=data.record_time,
+            max_records=data.max_records,
+            hop_count=0,
+            channel=0,
+            location_time=0,
+            help_flag=0,
+            battery=0
+        )
+        message_bytes = msg.build()
+
+        return message_bytes
 
     def store_data(self, data):
         self.data_storage.append(data)
