@@ -90,7 +90,10 @@ class Totem:
             print(f"Totem: Terminal {terminal_id} desconectado.")
 
     def send_memory(self):
-        # Placeholder para função relacionada a banco de dados
+        """
+        Placeholder para função relacionada a banco de dados
+        """
+
         register = self.data_storage
         self.data_storage = []
         return register
