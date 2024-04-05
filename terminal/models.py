@@ -1,6 +1,6 @@
 from message.models import Message as MessageModel
 from message.schemas import mobileBeacon as mobileBeaconSchema
-from message.schemas import record as recordSchema
+from message.schemas import register as registerSchema
 
 
 class Terminal:
@@ -9,10 +9,6 @@ class Terminal:
         self.memory = []  # Para armazenar dados a serem enviados ou recebidos
         self.state = "SLEEP"  # Estados incluem: SLEEP, LISTENING, SOLICIT_TRANSM, WAITING_FOR_REPLY, TRANSMITTING
         self.partner_id = None  # ID do terminal parceiro
-        self.data_to_send = []  # Dados que este terminal deseja enviar
-        self.data_to_receive = []  # Dados que este terminal deseja receber
-
-        # fazer lógica de memoria máxima
 
     def sleep(self):
         self.state = "SLEEP"
@@ -47,10 +43,10 @@ class Terminal:
         elif self.state == "TRANSMITTING":
             self.state = "WAITING_FOR_REPLY"  # adicionar temporização
             location = self.get_location()
-            msg = self.serialize(recordSchema(message_type=1, id=self.terminal_id, latitude=location['latitude'],
-                                              longitude=location['longitude'], group_flag=3,
-                                              record_time=10, max_records=1, hop_count=10, channel=3, location_time=50,
-                                              help_flag=0, battery=12))
+            msg = self.serialize(registerSchema(message_type=1, id=self.terminal_id, latitude=location['latitude'],
+                                                longitude=location['longitude'], group_flag=3,
+                                                record_time=10, max_records=1, hop_count=10, channel=3, location_time=50,
+                                                help_flag=0, battery=12))
             return self.send_data(msg)
 
         else:
@@ -59,7 +55,7 @@ class Terminal:
             """
             pass
 
-    def serialize(self, data: mobileBeaconSchema | recordSchema):
+    def serialize(self, data: mobileBeaconSchema | registerSchema):
         if isinstance(data, mobileBeaconSchema):
             msg = MessageModel(
                 message_type=data.message_type,
@@ -75,7 +71,7 @@ class Terminal:
                 help_flag=0,
                 battery=0
             )
-        elif isinstance(data, recordSchema):
+        elif isinstance(data, registerSchema):
             msg = MessageModel(
                 message_type=data.message_type,
                 id=data.id,
