@@ -18,7 +18,7 @@ class Terminal:
         self.partner_id = None
 
     def wake_up(self, data=None):
-        self.state = "LISTENING"
+        self.state = "ACTIVE"
         return self.listen_for_beacon(data)
 
     def listen_for_beacon(self, data=None):
@@ -35,7 +35,7 @@ class Terminal:
             self.request_data_transmission()
 
     def emit_beacon(self):
-        if self.state == "LISTENING":
+        if self.state == "WAITING_FOR_ACK":
             self.state = "WAITING_FOR_REPLY"
 
             location = self.get_location()
@@ -92,7 +92,10 @@ class Terminal:
                 battery=data.battery
             )
 
-        message_bytes = msg.build()  # se printar, aparecerá em hexadecimal por conta do Python, mas a representação interna é em binário.
+        message_bytes = msg.build()
+        """
+        Se printar message_bytes, a mensagem aparecerá em hexadecimal por conta da representação interna do print do Python, mas o dado está em binário.
+        """
 
         return message_bytes
 
@@ -155,8 +158,8 @@ class Terminal:
         """
         Método para solicitar a transmissão de dados para o parceiro
         """
-        if self.state == "SOLICIT_TRANSM" and self.terminal_id is not None:
-            self.state = "WAITING_FOR_AK"
+        if self.state == "ACTIVE" and self.partner_id is None:
+            self.state = "WAITING_FOR_ACK"
             if len(self.memory) == 0:
                 self.state = "TRANSMITTING"
                 self.emit_beacon()

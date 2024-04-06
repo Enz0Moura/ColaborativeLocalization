@@ -8,7 +8,7 @@ def simulate_interaction(bracelet, totem):
     """
     Função que simula interação totem-bracelet
     """
-    beacon = totem.send_beacon()  # Totem emits a beacon
+    beacon = bracelet.emit_beacon()  # Totem emits a beacon
 
     bracelet.receive_beacon(beacon)  # Bracelet receives beacon and stores data
 
