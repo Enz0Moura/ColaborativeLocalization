@@ -93,6 +93,7 @@ class Terminal:
             )
 
         message_bytes = msg.build()
+
         """
         Se printar message_bytes, a mensagem aparecerá em hexadecimal por conta da representação interna do print do Python, mas o dado está em binário.
         """
