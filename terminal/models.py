@@ -1,6 +1,8 @@
 from message.models import Message as MessageModel
 from message.schemas import mobileBeacon as mobileBeaconSchema
 from message.schemas import register as registerSchema
+import threading
+
 
 
 class Terminal:
@@ -9,6 +11,7 @@ class Terminal:
         self.memory = []  # Para armazenar dados a serem enviados ou recebidos
         self.state = "SLEEP"  # Estados incluem: SLEEP, LISTENING, SOLICIT_TRANSM, WAITING_FOR_REPLY, TRANSMITTING
         self.partner_id = None  # ID do terminal parceiro
+        self.ack_timer = None # Timer para reemitir beacon
 
     def sleep(self):
         self.state = "SLEEP"
@@ -33,11 +36,13 @@ class Terminal:
 
     def emit_beacon(self):
         if self.state == "LISTENING":
-            self.state = "WAITING_FOR_REPLY"  # adicionar temporização
+            self.state = "WAITING_FOR_REPLY"
+
             location = self.get_location()
             msg = self.serialize(mobileBeaconSchema(message_type=1, id=self.terminal_id, latitude=location['latitude'],
                                                     longitude=location['longitude'],
                                                     record_time=10))
+            self.start_ack_timer(timeout=5.0)
             return self.send_data(msg)
 
         elif self.state == "TRANSMITTING":
@@ -129,10 +134,23 @@ class Terminal:
         ack_parsed = MessageModel.parse(ack)
         if ack_parsed is not None and ack_parsed['max_records'] > 0:
             print(f"Connection with totem-{ack_parsed['totem_id']} was accepted")
+            self.ack_timer.cancel()
             return self.send_data()
         else:
             print(f"Connection with totem-{ack_parsed['totem_id']} was refused")
             return None
+
+    def start_ack_timer(self, timeout=5.0):
+        """
+        Método para iniciar o temporizador de ACK
+        """
+        self.ack_timer = threading.Timer(timeout, self.handle_ack_timeout)
+        self.ack_timer.start()
+
+    def handle_ack_timeout(self):
+        print("ACK não recebido a tempo.")
+        self.state = "SLEEP"
+
     def request_data_transmission(self):
         """
         Método para solicitar a transmissão de dados para o parceiro
