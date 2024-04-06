@@ -17,12 +17,13 @@ class Totem:
         free_space = 12 - len(self.data_storage)
         return free_space
 
-    def receive_beacon(self, beacon, terminal_id):
+    def receive_beacon(self, beacon):
         # Processa beacons recebidos dos terminais
+        terminal_id = beacon["id"]
         if terminal_id not in self.connected_terminals:
             self.connected_terminals[terminal_id] = "CONNECTED"
             print(f"Totem: Beacon recebido e conectado ao Terminal {terminal_id}.")
-            ack = self.acknowledge_beacon(beacon)
+            ack = self.accept_data_reception(beacon)
             if ack.max_records > 0:
                 print(f"Connection acepted with max records: {ack.max_records}")
             else:
