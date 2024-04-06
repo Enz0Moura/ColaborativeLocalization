@@ -37,8 +37,17 @@ class terminalMessage(BaseModel):
 class register(BaseModel):
     message_type: int
     id: int
+    record_time: int
     group_flag: int
     battery: int
+    latitude: float
+    longitude: float
+    max_records: int
+    hop_count: int
+    channel: int
+    location_time: int
+    help_flag: int
+
 
 class helpNot(BaseModel):
     message_type: int

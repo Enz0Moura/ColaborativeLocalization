@@ -56,8 +56,9 @@ class Terminal:
 
         else:
             """
-            Não emite beacon se não estiver em LISTENING
+            Não emite beacon se não estiver em TRANSMITTING ou WAITINGFORACK
             """
+            self.state = "ACTIVE"
             pass
 
     def serialize(self, data: mobileBeaconSchema | registerSchema):
@@ -163,7 +164,7 @@ class Terminal:
             self.state = "WAITING_FOR_ACK"
             if len(self.memory) == 0:
                 self.state = "TRANSMITTING"
-                self.emit_beacon()
+                return self.emit_beacon()
         else:
             self.state = "WAITING_FOR_REPLY"
             return self.send_data()
