@@ -1,7 +1,25 @@
-def send_terminal_beacons(memory, totem):
+def interaction_bracelet_totem(bracelet, totem):
     """placeholder para função que utilize LoRa"""
-    for beacon in memory:
-        totem.store_data(beacon)
+    registers = request_transmission(bracelet, totem)
+    if registers:
+        for register in registers:
+            totem.store_data(register)
+
+def request_transmission(bracelet, totem):
+    """
+    Função para simular envio de mensagem de ack e aceite ou rejeição da transmissão.
+    """
+    ack = bracelet.request_data_transmission()
+
+    tot_ack = totem.receive_beacon(ack)
+
+    message = bracelet.receive_ack(tot_ack)
+
+    if message:
+        return message
+    else:
+        return None
+
 
 
 def simulate_interaction(bracelet, totem):

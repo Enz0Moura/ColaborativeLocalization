@@ -42,16 +42,16 @@ class Terminal:
             msg = self.serialize(mobileBeaconSchema(message_type=1, id=self.terminal_id, latitude=location['latitude'],
                                                     longitude=location['longitude'],
                                                     record_time=10))
-            self.start_ack_timer(timeout=5.0)
             return self.send_data(msg)
 
         elif self.state == "TRANSMITTING":
-            self.state = "WAITING_FOR_REPLY"  # adicionar temporização
+            self.state = "WAITING_FOR_REPLY"
             location = self.get_location()
             msg = self.serialize(registerSchema(message_type=1, id=self.terminal_id, latitude=location['latitude'],
                                                 longitude=location['longitude'], group_flag=3,
                                                 record_time=10, max_records=1, hop_count=10, channel=3, location_time=50,
                                                 help_flag=0, battery=12))
+            self.start_ack_timer(timeout=5.0)
             return self.send_data(msg)
 
         else:
@@ -140,9 +140,12 @@ class Terminal:
         if ack_parsed is not None and ack_parsed['max_records'] > 0:
             print(f"Connection with totem-{ack_parsed['id']} was accepted")
             self.ack_timer.cancel()
+            self.state = "WAITING_FOR_REPLY"
             return self.send_data()
         else:
             print(f"Connection with totem-{ack_parsed['id']} was refused")
+            self.end_communication()
+            self.ack_timer.cancel()
             return None
 
     def start_ack_timer(self, timeout=5.0):

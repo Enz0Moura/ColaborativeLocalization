@@ -39,7 +39,7 @@ class Totem:
         Aceitar a recepção de dados do terminal
         """
 
-        if len(self.data_storage) > 8 or beacon['hop_count'] <= 5:
+        if self.max_records() > 8 or beacon['hop_count'] <= 5:
             ack = self.max_records()
         else:
             ack = 0
