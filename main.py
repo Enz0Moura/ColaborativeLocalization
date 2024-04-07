@@ -17,8 +17,8 @@ tot_ack = totem.receive_beacon(ack)
 bracelet1.receive_ack(tot_ack)
 
 
-send_terminal_beacons(bracelet1.request_data_transmission(), totem)
+# send_terminal_beacons(bracelet1.request_data_transmission(), totem)
 
-server.receive_data(totem.send_memory())
+# server.receive_data(totem.send_memory())
 
-print(server.memory)
+# print(server.memory)

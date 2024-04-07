@@ -7,7 +7,7 @@ from message.schemas import totemACK as totemACKSchema
 class Totem:
     def __init__(self):
         self.connected_terminals = {}
-        self.id = uuid.uuid4()
+        self.id = 4000
         self.data_storage = []
 
     def max_records(self):
@@ -19,15 +19,17 @@ class Totem:
 
     def receive_beacon(self, beacon):
         # Processa beacons recebidos dos terminais
+        beacon = MessageModel.parse(beacon)
         terminal_id = beacon["id"]
         if terminal_id not in self.connected_terminals:
             self.connected_terminals[terminal_id] = "CONNECTED"
             print(f"Totem: Beacon recebido e conectado ao Terminal {terminal_id}.")
             ack = self.accept_data_reception(beacon)
-            if ack.max_records > 0:
-                print(f"Connection acepted with max records: {ack.max_records}")
+            ack_parsed = MessageModel.parse(ack)
+            if ack_parsed['max_records'] > 0:
+                print(f"Connection acepted with max records: {ack_parsed['max_records']}")
             else:
-                print(f"Connection refused with max records: {ack.hopcount}")
+                print(f"Connection refused with max records: {ack_parsed['hop_count']}")
             return ack
         else:
             pass
@@ -37,18 +39,18 @@ class Totem:
         Aceitar a recepção de dados do terminal
         """
 
-        if len(self.data_storage) <= 12:
-            if len(self.data_storage) > 8 or beacon.hop_count <= 5:
-                ack = self.max_records()
+        if len(self.data_storage) > 8 or beacon['hop_count'] <= 5:
+            ack = self.max_records()
         else:
             ack = 0
+
         return self.acknowledge_beacon(beacon, ack)
 
     def acknowledge_beacon(self, beacon, ack):
-        print(f"Totem: Enviando confirmação de recepção do beacon para Terminal {beacon.id}.")
+        print(f"Totem: Enviando confirmação de recepção do beacon para Terminal {beacon['id']}.")
         return self.ack_message(
-            totemACKSchema(message_type=2, id=self.id, group_flag=beacon.group_flag, record_time=beacon.record_time,
-                           latitude=beacon.latitude, longitude=beacon.longitude, max_records=ack))
+            totemACKSchema(message_type=2, id=self.id, group_flag=beacon['group_flag'], location_time=beacon['location_time'],
+                           latitude=beacon['latitude'], longitude=beacon['longitude'], max_records=ack))
 
     def ack_message(self, data: totemACKSchema):
         """
@@ -61,11 +63,11 @@ class Totem:
             latitude=data.latitude,
             longitude=data.longitude,
             group_flag=data.group_flag,
-            record_time=data.record_time,
+            record_time=0,
             max_records=data.max_records,
             hop_count=0,
             channel=0,
-            location_time=0,
+            location_time=data.location_time,
             help_flag=0,
             battery=0
         )

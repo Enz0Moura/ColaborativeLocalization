@@ -14,7 +14,6 @@ message_schema = BitStruct(
     "channel" / BitsInteger(2),
     "location_time" / BitsInteger(16),
     "help_flag" / BitsInteger(2),
-    "ACK" / Flag,
     "battery" / BitsInteger(4),
 )
 

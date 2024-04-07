@@ -138,11 +138,11 @@ class Terminal:
     def receive_ack(self, ack):
         ack_parsed = MessageModel.parse(ack)
         if ack_parsed is not None and ack_parsed['max_records'] > 0:
-            print(f"Connection with totem-{ack_parsed['totem_id']} was accepted")
+            print(f"Connection with totem-{ack_parsed['id']} was accepted")
             self.ack_timer.cancel()
             return self.send_data()
         else:
-            print(f"Connection with totem-{ack_parsed['totem_id']} was refused")
+            print(f"Connection with totem-{ack_parsed['id']} was refused")
             return None
 
     def start_ack_timer(self, timeout=5.0):
