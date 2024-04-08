@@ -16,8 +16,8 @@ Este projeto simula um sistema de localização destinado a locais de trilha, fa
 1. **Ativação do Bracelete**:
  
 
-    O braceletes é ativado (wake_up) e começa a enviar e escutar beacons a fim de fechar 
-    comunicação com totéms próximos ou outros braceletes.
+    O bracelete é ativado (wake_up) e começa a enviar e escutar beacons a fim de fechar 
+    comunicação com totéms próximos ou com outros braceletes.
 
 2. **Interação Bracelet-Totem**:
 
